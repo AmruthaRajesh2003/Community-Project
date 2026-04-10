@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - CHWMS</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <style>
+        /* --- Google Font Import --- */
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+        
+        /* --- General Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            display: grid;
+            height: 100%;
+            width: 100%;
+            place-items: center;
+            background: #f4f7f6 url('/media/profile_pics/community_img_2.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        ::selection {
+            background: #2a9d8f; 
+            color: #fff;
+        }
+
+        /* --- Main Wrapper --- */
+        .wrapper {
+            overflow: hidden;
+            max-width: 390px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+        }
+
+        .wrapper .title {
+            font-size: 35px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2a9d8f;
+        }
+
+        /* --- Form Styles --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            padding: 0 15px;
+            border: 1px solid lightgrey;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #2a9d8f;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        /* --- Button Styles --- */
+        .btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #2a9d8f, #268a7e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #268a7e, #2a9d8f);
+        }
+
+        /* --- Link Styles --- */
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .register-link a {
+            color: #2a9d8f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Error Messages --- */
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* --- Forgot Password Link --- */
+        .forgot-password-link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .forgot-password-link a {
+            color: #2a9d8f;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .forgot-password-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="title">Login</div>
+
+        <div class="instructions" style="text-align: center; margin-bottom: 20px; color: #666; font-size: 14px;">
+            After entering credentials, an OTP will be sent to your email for verification.
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'user:login' %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Username" required autocomplete="username">
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+        </form>
+
+        <div class="register-link">
+            Don't have an account? <a href="{% url 'user:register_citizen' %}">Register as Citizen</a> | <a href="{% url 'user:register_health_worker' %}">Register as Health Worker</a>
+        </div>
+
+        <div class="forgot-password-link">
+            <a href="{% url 'user:forgot_password' %}">Forgot Password?</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,251 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register as Health Worker - CHWMS</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <style>
+        /* --- Google Font Import --- */
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+        
+        /* --- General Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            display: grid;
+            height: 100%;
+            width: 100%;
+            place-items: center;
+            background: #f4f7f6; 
+        }
+
+        ::selection {
+            background: #2a9d8f; 
+            color: #fff;
+        }
+
+        /* --- Main Wrapper --- */
+        .wrapper {
+            overflow: hidden;
+            max-width: 450px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+        }
+
+        .wrapper .title {
+            font-size: 35px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2a9d8f;
+        }
+
+        /* --- Form Styles --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0 15px;
+            border: 1px solid lightgrey;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input,
+        .form-group select {
+            height: 50px;
+        }
+
+        .form-group textarea {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2a9d8f;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #999;
+        }
+
+        /* --- Button Styles --- */
+        .btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #2a9d8f, #268a7e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #268a7e, #2a9d8f);
+        }
+
+        /* --- Link Styles --- */
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .login-link a {
+            color: #2a9d8f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Error Messages --- */
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="title">Register as Health Worker</div>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="role" value="health_worker">
+            
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter your username" required>
+            </div>
+
+            
+
+            
+
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone_number" placeholder="Enter your phone number">
+            </div>
+
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" name="date_of_birth">
+            </div>
+
+            <div class="form-group">
+                <label>Gender</label>
+                <select name="gender">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Address</label>
+                <textarea name="address" rows="3" placeholder="Enter your address"></textarea>
+            </div>
+
+         <div class="form-group">
+                <label>Aadhaar no</label>
+                <input type="text" name="Aadhaar no" placeholder="Enter 12 Digits">
+            </div>    
+
+            <div class="form-group">
+                <label>City</label>
+                <input type="text" name="city" placeholder="Enter your city">
+            </div>
+
+            <div class="form-group">
+                <label>Profile Picture</label>
+                <input type="file" name="profile_picture" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Emergency Contact Name</label>
+                <input type="text" name="emergency_contact_name" placeholder="Enter emergency contact name">
+            </div>
+
+            
+            <div class="form-group">
+                <label>Blood Group</label>
+                <input type="text" name="blood_group" placeholder="Enter your blood group (e.g., A+)">
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+        </form>
+
+
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'user:login' %}">Login here</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification - CHWMS</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <style>
+        /* --- Google Font Import --- */
+        @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
+
+        /* --- General Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        html, body {
+            display: grid;
+            height: 100%;
+            width: 100%;
+            place-items: center;
+            background: #f4f7f6 url('/media/profile_pics/community_img_2.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        ::selection {
+            background: #2a9d8f;
+            color: #fff;
+        }
+
+        /* --- Main Wrapper --- */
+        .wrapper {
+            overflow: hidden;
+            max-width: 390px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+        }
+
+        .wrapper .title {
+            font-size: 35px;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2a9d8f;
+        }
+
+        /* --- Form Styles --- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group input {
+            width: 100%;
+            height: 50px;
+            padding: 0 15px;
+            border: 1px solid lightgrey;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .form-group input:focus {
+            border-color: #2a9d8f;
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+            letter-spacing: normal;
+        }
+
+        /* --- Button Styles --- */
+        .btn {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(to right, #2a9d8f, #268a7e);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(to right, #268a7e, #2a9d8f);
+        }
+
+        .resend-btn {
+            width: 100%;
+            height: 40px;
+            background: #f8f9fa;
+            border: 1px solid #2a9d8f;
+            border-radius: 8px;
+            color: #2a9d8f;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .resend-btn:hover {
+            background: #2a9d8f;
+            color: white;
+        }
+
+        /* --- Link Styles --- */
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #2a9d8f;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Error Messages --- */
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* --- Instructions --- */
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="title">OTP Verification</div>
+
+        <div class="instructions">
+            Enter the 6-digit OTP sent to your email. It expires in 5 minutes.
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.tags == 'error' %}error-message{% else %}success-message{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'user:otp_verify' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input type="text" name="otp" placeholder="Enter OTP" maxlength="6" required autocomplete="off">
+            </div>
+
+            <button type="submit" class="btn">Verify OTP</button>
+        </form>
+
+        <form method="POST" action="{% url 'user:otp_verify' %}">
+            {% csrf_token %}
+            <input type="hidden" name="resend" value="true">
+            <button type="submit" class="resend-btn">Resend OTP</button>
+        </form>
+
+        <div class="back-link">
+            <a href="{% url 'user:login' %}">Back to Login</a>
+        </div>
+    </div>
+
+</body>
+</html>

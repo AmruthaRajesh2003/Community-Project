@@ -1,0 +1,668 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Dashboard - CHWMS</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <style>
+        .citizen-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-section h1 {
+            color: #2a9d8f;
+            margin-bottom: 1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            color: #2a9d8f;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-btn {
+            padding: 0.75rem 1.5rem;
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .feature-btn:hover {
+            background: #268a7e;
+        }
+        
+        .health-tips {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .health-tips h2 {
+            color: #2a9d8f;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .tip-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2a9d8f;
+        }
+        
+        .logout-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: #2a9d8f;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #2a9d8f;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #268a7e;
+        }
+
+        .events-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .event-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2a9d8f;
+        }
+
+        .contact-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-item {
+            padding: 1rem;
+            border-left: 4px solid #e74c3c;
+            background: #fef2f2;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+        }
+
+        .alert-item.info {
+            border-left-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .alert-item.warning {
+            border-left-color: #f39c12;
+            background: #fef9e7;
+        }
+
+        .record-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        /* --- Profile Section Styles --- */
+        .profile-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            background: #2a9d8f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin-right: 20px;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-details h3 {
+            color: #2a9d8f;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-details p {
+            margin: 0.25rem 0;
+            color: #666;
+        }
+
+        .edit-btn {
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .edit-btn:hover {
+            background: #268a7e;
+        }
+    </style>
+</head>
+<body>
+    <div class="citizen-dashboard">
+        <div class="welcome-section">
+            <h1>Welcome, Citizen!</h1>
+            <p>Community Health Portal - Your health is our priority</p>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-header">
+                <div class="profile-icon">👤</div>
+                <div class="profile-details">
+                    <h3>Citizen Profile</h3>
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                    <p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+                    <p><strong>Gender:</strong> {{ user.get_gender_display }}</p>
+                    <p><strong>Address:</strong> {{ user.address }}, {{ user.city }}</p>
+                    <p><strong>Aadhaar Number:</strong> {{ user.aadhar_number }}</p>
+                    <p><strong>Blood Group:</strong> {{ user.blood_group }}</p>
+                </div>
+            </div>
+            <a href="{% url 'user:edit_profile' %}" class="edit-btn" style="text-decoration: none; color: white; display: inline-block;">Edit Profile</a>
+        </div>
+
+        <div class="health-tips">
+            <h2>💡 Health Tips</h2>
+            <div class="tips-grid">
+                <div class="tip-item">
+                    <h4>Stay Hydrated</h4>
+                    <p>Drink at least 8 glasses of water daily for better health</p>
+                </div>
+                <div class="tip-item">
+                    <h4>Regular Exercise</h4>
+                    <p>30 minutes of daily exercise improves overall wellness</p>
+                </div>
+                <div class="tip-item">
+                    <h4>Balanced Diet</h4>
+                    <p>Eat plenty of fruits and vegetables for proper nutrition</p>
+                </div>
+                <div class="tip-item">
+                    <h4>Preventive Care</h4>
+                    <p>Regular health check-ups help prevent diseases</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>🏥 Report Health Issue</h3>
+                <p>Report any health concerns or disease symptoms in your area</p>
+                <button class="feature-btn">Report Issue</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📝 File Complaint</h3>
+                <p>Submit complaints about community health or sanitation issues</p>
+                <button class="feature-btn">File Complaint</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📅 Health Events</h3>
+                <p>View upcoming health camps, vaccination drives, and events</p>
+                <button class="feature-btn">View Events</button>
+            </div>
+            
+        <div class="feature-card">
+            <h3>📋 Health Records</h3>
+            <p>Access your personal health records and medical history</p>
+            <button class="feature-btn" onclick="openModal('healthRecordsModal')">View Records</button>
+        </div>
+            
+            <div class="feature-card">
+                <h3>📞 Emergency Contacts</h3>
+                <p>Important health emergency numbers and contacts</p>
+                <button class="feature-btn">View Contacts</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📢 Community Alerts</h3>
+                <p>Stay updated with important health alerts in your area</p>
+                <button class="feature-btn">View Alerts</button>
+            </div>
+        </div>
+        
+        <div class="logout-section">
+            <a href="{% url 'user:logout' %}" class="logout-btn" style="padding: 0.75rem 1.5rem; background: #2a9d8f; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background 0.3s ease; text-decoration: none; display: inline-block;">🚪 Logout</a>
+        </div>
+    </div>
+
+    <!-- Modal Overlays -->
+    <div id="reportIssueModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🏥 Report Health Issue</h2>
+                <button class="close-btn" onclick="closeModal('reportIssueModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="healthIssueForm">
+                    <div class="form-group">
+                        <label for="issueType">Issue Type</label>
+                        <select id="issueType" required>
+                            <option value="">Select issue type</option>
+                            <option value="disease">Disease Outbreak</option>
+                            <option value="symptoms">Health Symptoms</option>
+                            <option value="sanitation">Sanitation Issue</option>
+                            <option value="other">Other Health Concern</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="Enter your location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" placeholder="Describe the health issue in detail..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="urgency">Urgency Level</label>
+                        <select id="urgency" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="fileComplaintModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📝 File Complaint</h2>
+                <button class="close-btn" onclick="closeModal('fileComplaintModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="complaintForm">
+                    <div class="form-group">
+                        <label for="complaintType">Complaint Type</label>
+                        <select id="complaintType" required>
+                            <option value="">Select complaint type</option>
+                            <option value="sanitation">Sanitation Issue</option>
+                            <option value="noise">Noise Pollution</option>
+                            <option value="water">Water Quality</option>
+                            <option value="waste">Waste Management</option>
+                            <option value="other">Other Issue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintLocation">Location</label>
+                        <input type="text" id="complaintLocation" placeholder="Enter location of issue" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintDetails">Complaint Details</label>
+                        <textarea id="complaintDetails" placeholder="Please describe the issue in detail..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="photoEvidence">Photo Evidence (optional)</label>
+                        <input type="file" id="photoEvidence" accept="image/*">
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Complaint</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="healthEventsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📅 Upcoming Health Events</h2>
+                <button class="close-btn" onclick="closeModal('healthEventsModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="events-grid">
+                    {% for event in health_events %}
+                    <div class="event-item">
+                        <h4>{{ event.title }}</h4>
+                        <p><strong>Type:</strong> {{ event.get_event_type_display }}</p>
+                        <p><strong>Date:</strong> {{ event.start_datetime|date:"M d, Y" }}</p>
+                        <p><strong>Time:</strong> {{ event.start_datetime|time:"g:i A" }} - {{ event.end_datetime|time:"g:i A" }}</p>
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        {% if event.description %}
+                        <p><strong>Description:</strong> {{ event.description }}</p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p>No upcoming health events scheduled.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="healthRecordsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📋 Your Health Records</h2>
+                <button class="close-btn" onclick="closeModal('healthRecordsModal')">×</button>
+            </div>
+            <div class="modal-body">
+                {% for record in patient_records %}
+                <div class="record-item">
+                    <h4>{{ record.name }} - {{ record.condition }}</h4>
+                    <p><strong>Health Worker:</strong> {{ record.created_by.get_full_name|default:record.created_by.username }}</p>
+                    <p><strong>Age:</strong> {{ record.age }} years old</p>
+                    <p><strong>Gender:</strong> {{ record.get_gender_display }}</p>
+                    <p><strong>Diagnosis Date:</strong> {{ record.diagnosis_date|date:"M d, Y" }}</p>
+                    <p><strong>Treatment Plan:</strong> {{ record.treatment_plan }}</p>
+                    {% if record.medications %}
+                    <p><strong>Medications:</strong> {{ record.medications }}</p>
+                    {% endif %}
+                    {% if record.contact_number %}
+                    <p><strong>Contact:</strong> {{ record.contact_number }}</p>
+                    {% endif %}
+                    {% if record.emergency_contact %}
+                    <p><strong>Emergency Contact:</strong> {{ record.emergency_contact }}</p>
+                    {% endif %}
+                    {% if record.notes %}
+                    <p><strong>Notes:</strong> {{ record.notes }}</p>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="record-item">
+                    <p style="text-align: center; color: #666; font-style: italic;">No health records found. Please contact your healthcare provider to create your health records.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div id="emergencyContactsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📞 Emergency Contacts</h2>
+                <button class="close-btn" onclick="closeModal('emergencyContactsModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="contact-item">
+                    <h4>🚑 Ambulance</h4>
+                    <p><strong>Number:</strong> 108</p>
+                    <p><strong>Available:</strong> 24/7</p>
+                </div>
+                <div class="contact-item">
+                    <h4>🏥 Community Health Center</h4>
+                    <p><strong>Number:</strong> (555) 123-4567</p>
+                    <p><strong>Hours:</strong> 8:00 AM - 8:00 PM</p>
+                </div>
+                <div class="contact-item">
+                    <h4>👮‍♂️ Police Emergency</h4>
+                    <p><strong>Number:</strong> 100</p>
+                    <p><strong>Available:</strong> 24/7</p>
+                </div>
+                <div class="contact-item">
+                    <h4>🔥 Fire Department</h4>
+                    <p><strong>Number:</strong> 101</p>
+                    <p><strong>Available:</strong> 24/7</p>
+                </div>
+                <div class="contact-item">
+                    <h4>🌡️ Fever Helpline</h4>
+                    <p><strong>Number:</strong> (555) FEVER-11</p>
+                    <p><strong>Hours:</strong> 6:00 AM - 10:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="communityAlertsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📢 Community Health Alerts</h2>
+                <button class="close-btn" onclick="closeModal('communityAlertsModal')">×</button>
+            </div>
+            <div class="modal-body">
+                {% for report in disease_reports %}
+                <div class="alert-item {% if report.severity_level == 'high' or report.severity_level == 'critical' %}warning{% elif report.severity_level == 'low' %}info{% else %}{% endif %}">
+                    <h4>⚠️ {{ report.get_disease_type_display }} Alert</h4>
+                    <p><strong>Area:</strong> {{ report.affected_area }}</p>
+                    <p><strong>Cases:</strong> {{ report.cases_reported }}</p>
+                    <p><strong>Reported:</strong> {{ report.reported_at|date:"M d, Y" }}</p>
+                    {% if report.additional_info %}
+                    <p>{{ report.additional_info }}</p>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p>No active health alerts at this time.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal-overlay[style*="display: flex"]');
+                openModals.forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+
+        // Form submissions
+        document.getElementById('healthIssueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Health issue report submitted successfully!');
+            closeModal('reportIssueModal');
+        });
+
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Complaint submitted successfully!');
+            closeModal('fileComplaintModal');
+        });
+
+        // Connect buttons to modals
+        document.querySelectorAll('.feature-btn').forEach((btn, index) => {
+            const modals = [
+                'reportIssueModal',
+                'fileComplaintModal', 
+                'healthEventsModal',
+                'healthRecordsModal',
+                'emergencyContactsModal',
+                'communityAlertsModal'
+            ];
+            
+            if (modals[index]) {
+                btn.onclick = () => openModal(modals[index]);
+            }
+        });
+
+
+    </script>
+
+</body>
+</html>

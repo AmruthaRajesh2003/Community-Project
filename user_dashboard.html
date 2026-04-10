@@ -1,0 +1,1121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard - CHWMS</title>
+    <link rel="stylesheet" href="{% static 'dashboard.css' %}">
+    <style>
+        .user-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .welcome-section h1 {
+            color: #2a9d8f;
+            margin-bottom: 1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .feature-card h3 {
+            color: #2a9d8f;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-btn {
+            padding: 0.75rem 1.5rem;
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .feature-btn:hover {
+            background: #268a7e;
+        }
+        
+        .logout-section {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            color: #2a9d8f;
+            margin: 0;
+            margin-right: 1rem;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            margin-right: 0.5rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #2a9d8f;
+            box-shadow: 0 0 0 2px rgba(42, 157, 143, 0.2);
+        }
+
+        .clear-search-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .clear-search-btn:hover {
+            background: #c0392b;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: #2a9d8f;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #268a7e;
+        }
+
+        .events-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .event-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #2a9d8f;
+        }
+
+        .contact-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-item {
+            padding: 1rem;
+            border-left: 4px solid #e74c3c;
+            background: #fef2f2;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+        }
+
+        .alert-item.info {
+            border-left-color: #3498db;
+            background: #f0f8ff;
+        }
+
+        .alert-item.warning {
+            border-left-color: #f39c12;
+            background: #fef9e7;
+        }
+
+        .record-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        /* --- Profile Section Styles --- */
+        .profile-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            background: #2a9d8f;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            margin-right: 20px;
+        }
+
+        .profile-details {
+            flex: 1;
+        }
+
+        .profile-details h3 {
+            color: #2a9d8f;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-details p {
+            margin: 0.25rem 0;
+            color: #666;
+        }
+
+        .edit-btn {
+            background: #2a9d8f;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .edit-btn:hover {
+            background: #268a7e;
+        }
+
+        .schemes-list {
+            margin-top: 1rem;
+        }
+
+        .schemes-list h4 {
+            color: #2a9d8f;
+            margin-bottom: 0.5rem;
+        }
+
+        .schemes-list ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .schemes-list li {
+            background: #f8f9fa;
+            padding: 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: 4px;
+            border-left: 3px solid #2a9d8f;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-dashboard">
+        <div class="welcome-section">
+            <h1>Welcome, User!</h1>
+            <p>Health Worker Dashboard - Community Health Management System</p>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <div class="profile-header">
+                <div class="profile-icon">👤</div>
+                <div class="profile-details">
+                    <h3>Health Worker Profile</h3>
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Phone:</strong> {{ user.phone_number }}</p>
+                    <p><strong>Date of Birth:</strong> {{ user.date_of_birth }}</p>
+                    <p><strong>Gender:</strong> {{ user.gender }}</p>
+                    <p><strong>Address:</strong> {{ user.address }}, {{ user.city }}</p>
+                    <p><strong>Blood Group:</strong> {{ user.blood_group }}</p>
+                </div>
+            </div>
+            <a href="{% url 'user:edit_profile' %}" class="edit-btn" style="text-decoration: none; color: white; display: inline-block;">Edit Profile</a>
+            <div class="schemes-list">
+                <h4>Applied Schemes</h4>
+                <ul>
+                    <li>Scheme 1: Health Insurance</li>
+                    <li>Scheme 2: Vaccination Program</li>
+                    <li>Scheme 3: Medical Aid</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📋 Patient Records</h3>
+                <p>Manage and update patient health records and treatment plans</p>
+                <button class="feature-btn">View Records</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🏥 Disease Reporting</h3>
+                <p>Report suspected disease outbreaks in your assigned areas</p>
+                <button class="feature-btn">Report Disease</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📅 My Schedule</h3>
+                <p>View your assigned health worker schedule and activities</p>
+                <button class="feature-btn">View Schedule</button>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📊 Analytics</h3>
+                <p>Access community health statistics and reports</p>
+                <button class="feature-btn">View Analytics</button>
+            </div>
+        </div>
+        
+        <div class="logout-section">
+            <a href="{% url 'user:logout' %}" class="logout-btn" style="padding: 0.75rem 1.5rem; background: #2a9d8f; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: background 0.3s ease; text-decoration: none; display: inline-block;">🚪 Logout</a>
+        </div>
+    </div>
+
+    <!-- Modal Overlays -->
+    <div id="viewRecordsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                    <h2>📋 Patient Records</h2>
+                    <button class="close-btn" onclick="closeModal('viewRecordsModal')">×</button>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="patientSearch" class="search-input" placeholder="Search patients by name, age, condition, or treatment..." oninput="filterPatients()">
+                    <button class="clear-search-btn" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+            <div class="modal-body" id="patientRecordsBody">
+                {% for patient in patient_records %}
+                <div class="record-item">
+                    <h4>{{ patient.name }}</h4>
+                    <p><strong>Age:</strong> {{ patient.age }}</p>
+                    <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
+                    <p><strong>Condition:</strong> {{ patient.condition }}</p>
+                    <p><strong>Treatment Plan:</strong> {{ patient.treatment_plan }}</p>
+                    <p><strong>Diagnosis Date:</strong> {{ patient.diagnosis_date }}</p>
+                    {% if patient.contact_number %}
+                    <p><strong>Contact:</strong> {{ patient.contact_number }}</p>
+                    {% endif %}
+                <button onclick="editPatient({{ patient.id }})">Edit</button>
+                <button onclick="deletePatient({{ patient.id }})">Delete</button>
+                </div>
+                {% empty %}
+                <p>No patient records found.</p>
+                {% endfor %}
+
+                <hr style="margin: 2rem 0;">
+                <h3>Add New Patient Record</h3>
+                <form id="patientRecordForm" method="post" action="{% url 'user:create_patient_record' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="patient_id" id="patientId">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name</label>
+                        <select name="name" id="patientName" required>
+                            <option value="">-- Select Patient --</option>
+                            {% for citizen in citizens %}
+                            <option value="{{ citizen.get_full_name }}">{{ citizen.get_full_name }} ({{ citizen.username }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientAge">Age</label>
+                        <input type="number" name="age" id="patientAge" min="1" max="150" placeholder="Enter patient's age" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientGender">Gender</label>
+                        <select name="gender" id="patientGender" required>
+                            <option value="">Select gender</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                            <option value="U">Unknown</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patientCondition">Medical Condition</label>
+                        <textarea name="condition" id="patientCondition" placeholder="Describe the patient's medical condition..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="treatmentPlan">Treatment Plan</label>
+                        <textarea name="treatment_plan" id="treatmentPlan" placeholder="Describe the treatment plan..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="diagnosisDate">Diagnosis Date</label>
+                        <input type="date" name="diagnosis_date" id="diagnosisDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactNumber">Contact Number (Optional)</label>
+                        <input type="tel" name="contact_number" id="contactNumber" placeholder="Enter contact number">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address (Optional)</label>
+                        <textarea name="address" id="address" placeholder="Enter address"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="medications">Medications (Optional)</label>
+                        <textarea name="medications" id="medications" placeholder="List medications"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="allergies">Allergies (Optional)</label>
+                        <textarea name="allergies" id="allergies" placeholder="List allergies"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="emergencyContact">Emergency Contact (Optional)</label>
+                        <input type="text" name="emergency_contact" id="emergencyContact" placeholder="Emergency contact name">
+                    </div>
+                    <div class="form-group">
+                        <label for="emergencyPhone">Emergency Phone (Optional)</label>
+                        <input type="tel" name="emergency_phone" id="emergencyPhone" placeholder="Emergency contact phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Additional Notes (Optional)</label>
+                        <textarea name="notes" id="notes" placeholder="Additional notes"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Create Patient Record</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportDiseaseModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🏥 Disease Reports</h2>
+                <button class="close-btn" onclick="closeModal('reportDiseaseModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="diseaseReportsList">
+                    {% for report in disease_reports %}
+                    <div class="record-item">
+                        <h4>{{ report.get_disease_type_display }} in {{ report.affected_area }}</h4>
+                        <p><strong>Cases:</strong> {{ report.cases_reported }}</p>
+                        <p><strong>Severity:</strong> {{ report.get_severity_display }}</p>
+                        <p><strong>Reported:</strong> {{ report.reported_at|date:"M d, Y" }}</p>
+                        <p><strong>Status:</strong> {{ report.get_status_display }}{% if report.is_confirmed %} (Confirmed){% endif %}</p>
+                        {% if report.verifier %}
+                        <p><strong>Verifier:</strong> {{ report.verifier.get_full_name }} ({{ report.verified_date|date:"M d, Y" }})</p>
+                        {% endif %}
+                        {% if report.approver %}
+                        <p><strong>Approver:</strong> {{ report.approver.get_full_name }} ({{ report.approved_date|date:"M d, Y" }})</p>
+                        {% endif %}
+                        {% if report.verifier_comment %}
+                        <p><strong>Verifier Comment:</strong> {{ report.verifier_comment }}</p>
+                        {% endif %}
+                        {% if report.approver_comment %}
+                        <p><strong>Approver Comment:</strong> {{ report.approver_comment }}</p>
+                        {% endif %}
+                        <div style="margin-top: 10px;">
+                            {% if report.status == 'pending' and user.username == 'sharjeel_ahmad' %}
+                            <button onclick="verifyDiseaseReport({{ report.id }}, 'verify')">Verify</button>
+                            <button onclick="verifyDiseaseReport({{ report.id }}, 'reject')">Reject</button>
+                            {% elif report.status == 'verified' and user.username == 'shazad_ahmad' %}
+                            <button onclick="approveDiseaseReport({{ report.id }}, 'approve')">Approve</button>
+                            <button onclick="approveDiseaseReport({{ report.id }}, 'reject')">Reject</button>
+                            {% endif %}
+                            <button onclick="editDiseaseReport({{ report.id }})">Edit</button>
+                            <button onclick="deleteDiseaseReport({{ report.id }})">Delete</button>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No disease reports found.</p>
+                    {% endfor %}
+                </div>
+                <hr>
+                <h3>Add New Report</h3>
+                <form id="diseaseReportForm" method="post" action="{% url 'user:create_disease_report' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="diseaseType">Disease Type</label>
+                        <select name="disease_type" id="diseaseType" required>
+                            <option value="">Select disease</option>
+                            <option value="flu">Influenza (Flu)</option>
+                            <option value="covid">COVID-19</option>
+                            <option value="dengue">Dengue</option>
+                            <option value="malaria">Malaria</option>
+                            <option value="cholera">Cholera</option>
+                            <option value="tuberculosis">Tuberculosis</option>
+                            <option value="measles">Measles</option>
+                            <option value="hepatitis">Hepatitis</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="affectedArea">Affected Area</label>
+                        <input type="text" name="affected_area" id="affectedArea" placeholder="Enter affected area" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="casesReported">Number of Cases</label>
+                        <input type="number" name="cases_reported" id="casesReported" min="1" placeholder="Enter number of cases" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="severity_level">Severity Level</label>
+                        <select name="severity_level" id="severity_level">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="outbreak_start_date">Outbreak Start Date</label>
+                        <input type="date" name="outbreak_start_date" id="outbreak_start_date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="additionalInfo">Additional Information</label>
+                        <textarea name="additional_info" id="additionalInfo" placeholder="Provide any additional details..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reporter_contact">Reporter Contact</label>
+                        <input type="text" name="reporter_contact" id="reporter_contact" placeholder="Your contact number">
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewScheduleModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📅 My Health Worker Schedule</h2>
+                <button class="close-btn" onclick="closeModal('viewScheduleModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="events-grid">
+                    {% for event in health_events %}
+                    <div class="event-item">
+                        <h4>{{ event.title }}</h4>
+                        <p><strong>Type:</strong> {{ event.get_event_type_display }}</p>
+                        <p><strong>Date:</strong> {{ event.start_datetime|date:"M d, Y" }}</p>
+                        <p><strong>Time:</strong> {{ event.start_datetime|time:"g:i A" }} - {{ event.end_datetime|time:"g:i A" }}</p>
+                        <p><strong>Location:</strong> {{ event.location }}</p>
+                        <p><strong>Status:</strong> {{ event.get_status_display }}</p>
+                        {% if event.description %}
+                        <p><strong>Description:</strong> {{ event.description }}</p>
+                        {% endif %}
+                        {% if event.assigned_to %}
+                        <p><strong>Assigned to:</strong> {{ event.assigned_to }}</p>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <p>No scheduled activities found.</p>
+                    {% endfor %}
+                </div>
+                <div style="margin-top: 2rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; text-align: center;">
+                    <p><strong>Note:</strong> Your schedule and health events are managed by administrators.</p>
+                    <p>Contact your supervisor if you need schedule updates or have questions about your assignments.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewAnalyticsModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📊 Analytics</h2>
+                <button class="close-btn" onclick="closeModal('viewAnalyticsModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <h3>Community Health Statistics</h3>
+                <div class="analytics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                    <div class="analytics-card" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2a9d8f; margin-bottom: 0.5rem;">Total Patients</h4>
+                        <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ patient_records|length }}</p>
+                    </div>
+                    <div class="analytics-card" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2a9d8f; margin-bottom: 0.5rem;">Disease Reports</h4>
+                        <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ disease_reports|length }}</p>
+                    </div>
+                    <div class="analytics-card" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2a9d8f; margin-bottom: 0.5rem;">Health Events</h4>
+                        <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ health_events|length }}</p>
+                    </div>
+                    <div class="analytics-card" style="background: #f8f9fa; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #2a9d8f; margin-bottom: 0.5rem;">Confirmed Cases</h4>
+                        <p style="font-size: 2rem; font-weight: bold; margin: 0;">{{ disease_reports|length|default:0 }}</p>
+                    </div>
+                </div>
+
+                <h4>Recent Disease Reports</h4>
+                <div class="recent-reports">
+                    {% for report in disease_reports|slice:":5" %}
+                    <div class="alert-item {% if report.severity_level == 'high' or report.severity_level == 'critical' %}warning{% elif report.severity_level == 'low' %}info{% else %}{% endif %}">
+                        <strong>{{ report.get_disease_type_display }}</strong> in {{ report.affected_area }}
+                        <br><small>{{ report.reported_at|date:"M d, Y" }} - {{ report.cases_reported }} cases</small>
+                    </div>
+                    {% empty %}
+                    <p>No recent disease reports.</p>
+                    {% endfor %}
+                </div>
+
+                <h4>Upcoming Health Events</h4>
+                <div class="upcoming-events">
+                    {% for event in health_events|slice:":3" %}
+                    <div class="event-item">
+                        <strong>{{ event.title }}</strong>
+                        <br><small>{{ event.start_datetime|date:"M d, Y" }} at {{ event.location }}</small>
+                    </div>
+                    {% empty %}
+                    <p>No upcoming health events.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal-overlay');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    closeModal(modal.id);
+                }
+            });
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal-overlay[style*="display: flex"]');
+                openModals.forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+
+        // AJAX Form submission handling
+        document.getElementById('diseaseReportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Disease report submitted successfully!');
+                    this.reset();
+                    closeModal('reportDiseaseModal');
+                    // Optionally refresh the disease reports list
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to submit report'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while submitting the report.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            });
+        });
+
+        document.getElementById('patientRecordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating...';
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Patient record created successfully!');
+                    this.reset();
+                    closeModal('viewRecordsModal');
+                    // Optionally refresh the patient records list
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to create patient record'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while creating the patient record.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            });
+        });
+
+        // Connect buttons to modals
+        document.querySelectorAll('.feature-btn').forEach((btn, index) => {
+            const modals = [
+                'viewRecordsModal',
+                'reportDiseaseModal',
+                'viewScheduleModal',
+                'viewAnalyticsModal'
+            ];
+            if (modals[index]) {
+                btn.onclick = () => openModal(modals[index]);
+            }
+        });
+
+
+
+        // Patient search functionality
+        function filterPatients() {
+            const searchTerm = document.getElementById('patientSearch').value.toLowerCase();
+            const recordItems = document.querySelectorAll('#patientRecordsBody .record-item');
+            let hasResults = false;
+
+            recordItems.forEach(item => {
+                const patientText = item.textContent.toLowerCase();
+                if (patientText.includes(searchTerm)) {
+                    item.style.display = 'block';
+                    hasResults = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show no results message if no matches found
+            let noResultsMsg = document.querySelector('.no-results');
+            if (!hasResults && searchTerm) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.className = 'no-results';
+                    noResultsMsg.textContent = 'No patients found matching your search.';
+                    document.getElementById('patientRecordsBody').appendChild(noResultsMsg);
+                }
+            } else if (noResultsMsg) {
+                noResultsMsg.remove();
+            }
+        }
+
+        function clearSearch() {
+            document.getElementById('patientSearch').value = '';
+            filterPatients();
+        }
+
+        // Edit and Delete functionality
+        function editPatient(patientId) {
+            // Fetch patient data
+            fetch(`/user/patient-records/${patientId}/`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'error') {
+                    alert('Error: ' + data.message);
+                    return;
+                }
+                // Populate form with data
+                document.getElementById('patientId').value = data.id;
+                document.getElementById('patientName').value = data.name;
+                document.getElementById('patientAge').value = data.age;
+                document.getElementById('patientGender').value = data.gender;
+                document.getElementById('patientCondition').value = data.condition;
+                document.getElementById('treatmentPlan').value = data.treatment_plan;
+                document.getElementById('diagnosisDate').value = data.diagnosis_date;
+                document.getElementById('contactNumber').value = data.contact_number || '';
+                document.getElementById('address').value = data.address || '';
+                document.getElementById('medications').value = data.medications || '';
+                document.getElementById('allergies').value = data.allergies || '';
+                document.getElementById('emergencyContact').value = data.emergency_contact || '';
+                document.getElementById('emergencyPhone').value = data.emergency_phone || '';
+                document.getElementById('notes').value = data.notes || '';
+
+                // Change form action to update
+                document.getElementById('patientRecordForm').action = `/user/patient-records/update/`;
+                document.getElementById('submitBtn').textContent = 'Update Patient Record';
+
+                // Scroll to form
+                document.querySelector('#patientRecordForm').scrollIntoView({ behavior: 'smooth' });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while fetching patient data.');
+            });
+        }
+
+        function deletePatient(patientId) {
+            if (confirm('Are you sure you want to delete this patient record? This action cannot be undone.')) {
+                // Show loading state
+                const deleteBtn = event.target;
+                const originalText = deleteBtn.textContent;
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Deleting...';
+
+                fetch(`/user/patient-records/delete/`, {
+                    method: 'POST',
+                    body: JSON.stringify({ patient_id: patientId }),
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Patient record deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to delete patient record'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the patient record.');
+                })
+                .finally(() => {
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = originalText;
+                });
+            }
+        }
+
+        function editDiseaseReport(reportId) {
+            // For now, show a simple alert. In a full implementation, this would open an edit modal
+            alert(`Edit functionality for disease report ${reportId} would be implemented here.`);
+        }
+
+        function deleteDiseaseReport(reportId) {
+            if (confirm('Are you sure you want to delete this disease report? This action cannot be undone.')) {
+                // Show loading state
+                const deleteBtn = event.target;
+                const originalText = deleteBtn.textContent;
+                deleteBtn.disabled = true;
+                deleteBtn.textContent = 'Deleting...';
+
+                fetch(`/user/disease-reports/${reportId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('Disease report deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to delete disease report'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the disease report.');
+                })
+                .finally(() => {
+                    deleteBtn.disabled = false;
+                    deleteBtn.textContent = originalText;
+                });
+            }
+        }
+
+        function verifyDiseaseReport(reportId, action) {
+            const comment = prompt('Enter your comment for this action:');
+            if (comment === null) return; // User cancelled
+
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            fetch(`/user/verify-disease-report/${reportId}/`, {
+                method: 'POST',
+                body: JSON.stringify({ action: action, comment: comment }),
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Disease report ' + action + 'd successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to ' + action + ' report'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the report.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
+        }
+
+        function approveDiseaseReport(reportId, action) {
+            const comment = prompt('Enter your comment for this action:');
+            if (comment === null) return; // User cancelled
+
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            fetch(`/user/approve-disease-report/${reportId}/`, {
+                method: 'POST',
+                body: JSON.stringify({ action: action, comment: comment }),
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Disease report ' + action + 'd successfully!');
+                    location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to ' + action + ' report'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while processing the report.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            });
+        }
+
+        // Initialize search when modal opens
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewRecordsBtn = document.querySelector('.feature-btn');
+            if (viewRecordsBtn) {
+                const originalClick = viewRecordsBtn.onclick;
+                viewRecordsBtn.onclick = function() {
+                    if (originalClick) originalClick();
+                    // Clear search when opening modal
+                    setTimeout(() => {
+                        clearSearch();
+                    }, 100);
+                };
+            }
+
+            // Citizen selection functionality
+            const citizenSelect = document.getElementById('citizenSelect');
+            if (citizenSelect) {
+                citizenSelect.addEventListener('change', function() {
+                    const citizenId = this.value;
+                    if (citizenId) {
+                        // Fetch citizen data
+                        fetch(`/user/citizen/${citizenId}/`, {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                // Populate form fields with citizen data
+                                document.getElementById('patientName').value = data.citizen.get_full_name || data.citizen.username;
+                                document.getElementById('patientAge').value = data.citizen.age || '';
+                                document.getElementById('patientGender').value = data.citizen.gender || '';
+                                document.getElementById('contactNumber').value = data.citizen.phone_number || '';
+                                document.getElementById('address').value = data.citizen.address || '';
+                                document.getElementById('emergencyContact').value = data.citizen.emergency_contact_name || '';
+                                document.getElementById('emergencyPhone').value = data.citizen.emergency_contact_phone || '';
+                            } else {
+                                alert('Error loading citizen data: ' + (data.message || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while loading citizen data.');
+                        });
+                    } else {
+                        // Clear form fields if no citizen selected
+                        document.getElementById('patientName').value = '';
+                        document.getElementById('patientAge').value = '';
+                        document.getElementById('patientGender').value = '';
+                        document.getElementById('contactNumber').value = '';
+                        document.getElementById('address').value = '';
+                        document.getElementById('emergencyContact').value = '';
+                        document.getElementById('emergencyPhone').value = '';
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
